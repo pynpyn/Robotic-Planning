@@ -7,7 +7,7 @@
 
 void GoalPoseCallback(const geometry_msgs::Pose2D::ConstPtr& msg);
 void CurrentPoseCallback(const turtlesim::Pose::ConstPtr& msg);
-float AngError(turtlesim::Pose Current_position, geometry_msgs::Pose2D Goal_position);
+float *AngError(turtlesim::Pose Current_position, geometry_msgs::Pose2D Goal_position);
 float DisError(turtlesim::Pose Current_position, geometry_msgs::Pose2D Goal_position);
 
 bool STOP = true;
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 		ros::spinOnce();
 		if (STOP == false)
 		{
-			Error_Angle = (float *) AngError(Current_position,Goal_position);
+			Error_Angle = AngError(Current_position,Goal_position);
 			Error_Distance = DisError(Current_position,Goal_position);
 			printf("Angle Error: %f, Distnace Error: %f \n",*Error_Angle,Error_Distance);
 
@@ -72,7 +72,7 @@ void CurrentPoseCallback(const turtlesim::Pose::ConstPtr& msg)
 	Current_position.theta = msg->theta;
 }
 
-float AngError(turtlesim::Pose Current_position, geometry_msgs::Pose2D Goal_position)
+float *AngError(turtlesim::Pose Current_position, geometry_msgs::Pose2D Goal_position)
 {
 	float angle_d = atan2f(Goal_position.y-Current_position.y,Goal_position.x-Current_position.x);
 	static float error_angle[3] = {0,0,0}; 
@@ -84,7 +84,7 @@ float AngError(turtlesim::Pose Current_position, geometry_msgs::Pose2D Goal_posi
 	error_angle[1] = error_angle[1]+error_angle[0]*(1.0/10); // integral error
 	error_old = error_angle[0];
 	
-	return error_angle;
+	return &error_angle;
 
 }
 
